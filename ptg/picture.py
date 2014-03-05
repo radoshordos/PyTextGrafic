@@ -2,14 +2,16 @@ __author__ = 'Rados'
 
 from math import sqrt
 
-# http://docs.python-guide.org/en/latest/writing/style/
+print('---------------------------------------------------')
+print('--- https://github.com/radoshordos/PyTextGrafic ---')
+print('---------------------------------------------------')
+
 
 class Picture(object):
     DEFAULT_COLOR = "O"
     picture = []
     width = 0
     height = 0
-
 
     def create(self, width, height, color=DEFAULT_COLOR):
         self.width = width
@@ -69,7 +71,6 @@ class Picture(object):
                     for i in self.__add_useful_neighborhood(point, old_color):
 
 
-
                         if point not in list_used and point not in list_new:
                             list_new.append(i)
                     self.__set_new_color(point[0], point[1], new_color)
@@ -89,8 +90,6 @@ class Picture(object):
     def __set_new_color(self, width, height, new_color):
         self.picture[width][height] = new_color
 
-
-
     def __add_useful_neighborhood(self, list, old_color):
         new_points = []
         if self.__is_exists_point(list[0] - 1, list[1], old_color):
@@ -104,11 +103,40 @@ class Picture(object):
         return new_points
 
 
-#
-#pic = Picture()
-#pic.create(20, 20, "P")
-#pic.line(2, 5, 16, 8, "X")
-#pic.area(2, 5, 6, 8, "g")
-#pic.fill(2, 2, "w")
-#pic.fill(2, 2, "0")
-#pic.show()
+def valid_command(inp, cmd):
+    if inp.lower() == cmd:
+        return True
+    return False
+
+
+choice = ""
+
+while choice != 'exit':
+    choice = str(input("Zadej příkaz:"))
+    command = choice.split(" ")
+    pic = Picture()
+
+    try:
+        if valid_command(command[0].lower(), 'create'):
+            pic.create(int(command[1]), int(command[2]), str(command[3]))
+        elif valid_command(command[0].lower(), 'point'):
+            pic.point(int(command[1]), int(command[2]), str(command[3]))
+        elif valid_command(command[0].lower(), 'line'):
+            pic.line(int(command[1]), int(command[2]), int(command[3]), int(command[4]), str(command[5]))
+        elif valid_command(command[0].lower(), 'area'):
+            pic.area(int(command[1]), int(command[2]), int(command[3]), int(command[4]), str(command[5]))
+        elif valid_command(command[0].lower(), 'fill'):
+            pic.fill(int(command[1]), int(command[2]), str(command[3]))
+        elif valid_command(command[0].lower(), 'show'):
+            pic.show()
+        elif valid_command(command[0].lower(), 'clear'):
+            pic.clear()
+        elif valid_command(command[0].lower(), 'exit'):
+            break
+        else:
+            print("CHYBNY PRIKAZ")
+    except IndexError:
+        print("CHYBNE PARAMETRY")
+    except:
+        print("CHYBA")
+        raise
