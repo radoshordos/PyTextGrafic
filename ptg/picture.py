@@ -103,10 +103,12 @@ class Picture(object):
             new_points.append([list[0], list[1] + 1])
         return new_points
 
-pic = Picture()
-pic.create(20, 20, "P")
-pic.line(2, 5, 16, 8, "X")
-pic.area(2, 5, 6, 8, "g")
-pic.fill(2, 2, "w")
-pic.fill(2, 2, "0")
-pic.show()
+
+#
+#pic = Picture()
+#pic.create(20, 20, "P")
+#pic.line(2, 5, 16, 8, "X")
+#pic.area(2, 5, 6, 8, "g")
+#pic.fill(2, 2, "w")
+#pic.fill(2, 2, "0")
+#pic.show()
