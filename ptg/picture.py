@@ -2,11 +2,6 @@ __author__ = 'Rados'
 
 from math import sqrt
 
-print('---------------------------------------------------')
-print('--- https://github.com/radoshordos/PyTextGrafic ---')
-print('---------------------------------------------------')
-
-
 class Picture(object):
     DEFAULT_COLOR = "O"
     picture = []
@@ -77,8 +72,7 @@ class Picture(object):
         old_color = self.__get_color(x, y)
         list_new = [[x, y]]
         list_used = []
-        counter = len(list_new)
-        while counter > 0:
+        while len(list_new) > 0:
             point = list_new.pop()
             px = point[0]
             py = point[1]
@@ -92,7 +86,6 @@ class Picture(object):
                 list_new.append([px, py + 1])
             self.picture[py - 1][px - 1] = new_color
             list_used.append(point)
-            counter = len(list_new)
 
     def __is_exists_new_point(self, x, y, old_color, list_new, list_used):
         if 0 < x <= self.width:
