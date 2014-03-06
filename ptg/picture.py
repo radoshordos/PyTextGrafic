@@ -13,33 +13,45 @@ class Picture(object):
     width = 0
     height = 0
 
-    def create(self, width, height, color=DEFAULT_COLOR):
-        self.width = width
-        self.height = height
+    def create(self, x, y, color=DEFAULT_COLOR):
+        self.width = x
+        self.height = y
 
-        for x in list(range(width)):
-            self.picture.append([color] * height)
+        for y in list(range(y)):
+            self.picture.append([color] * x)
 
-    def show(self, separator=" "):
+    def show(self, separator=""):
         for row in self.picture:
             print(separator.join(row))
 
-    def point(self, width, height, color):
-        self.picture[width][height] = str(color)
+    def point(self, x, y, color):
+        self.picture[y - 1][x - 1] = str(color)
 
     def area(self, x1, y1, x2, y2, color):
-        for x in list(range(x1, x2)):
-            for y in list(range(y1, y2)):
-                self.picture[x][y] = color
+        """
+        Vyplní obdelníkovou plochu zvolenou barvou
+        """
+        for x in list(range(x1 - 1, x2)):
+            for y in list(range(y1 - 1, y2)):
+                self.picture[y][x] = color
 
     def clear(self):
-        self.area(0, 0, self.width, self.height, self.DEFAULT_COLOR)
+        """
+        Nastaví hodnoty, které byly při voláni funkce create x y
+        """
+        self.area(1, 1, self.width, self.height, self.DEFAULT_COLOR)
 
     def line(self, x1, y1, x2, y2, color):
+        """
+        Algoritmus vyhledavá nejkratší cestu mezi 2 zvolenými body.
+        Používá k tomu výpočet absolutní hodnoty komplexního čísla.
+        Nejkratší cesta je následně přetřena zvolenou barvou.
+        """
         if x1 > x2:  # swap x
             x1, x2 = x2, x1
         if y1 > y2:  # swap y
             y1, y2 = y2, y1
+
         for x in list(range(x1, x2 + 1)):
             line = []
             for y in list(range(y1, y2 + 1)):
@@ -57,51 +69,43 @@ class Picture(object):
     def __abs_number(x, y):
         return sqrt(x ** 2 + y ** 2)
 
-    # Backtracking algorithm
-    def fill(self, width, height, new_color):
-        old_color = self.__get_color(width, height)
-        if self.__is_exists_point(width, height, old_color):
-            list_new = [[width, height]]
-            list_used = []
+    def fill(self, x, y, new_color):
+        """
+        Backtracking algoritmus pro prohledánání bodů k obarvení
+        Vyhledavaji se body (down, top, left, right)
+        """
+        old_color = self.__get_color(x, y)
+        list_new = [[x, y]]
+        list_used = []
+        counter = len(list_new)
+        while counter > 0:
+            point = list_new.pop()
+            px = point[0]
+            py = point[1]
+            if self.__is_exists_new_point(px - 1, py, old_color, list_new, list_used):
+                list_new.append([px - 1, py])
+            if self.__is_exists_new_point(px + 1, py, old_color, list_new, list_used):
+                list_new.append([px + 1, py])
+            if self.__is_exists_new_point(px, py - 1, old_color, list_new, list_used):
+                list_new.append([px, py - 1])
+            if self.__is_exists_new_point(px, py + 1, old_color, list_new, list_used):
+                list_new.append([px, py + 1])
+            self.picture[py - 1][px - 1] = new_color
+            list_used.append(point)
+            counter = len(list_new)
 
-            count = len(list_new);
-            for i in list(range(0, 1000)):
-                if len(list_new) > 0:
-                    point = list_new.pop()
-                    for i in self.__add_useful_neighborhood(point, old_color):
-
-
-                        if point not in list_used and point not in list_new:
-                            list_new.append(i)
-                    self.__set_new_color(point[0], point[1], new_color)
-                    list_used.append(point)
-                count = len(list_new);
-
-    def __get_color(self, width, height):
-        return self.picture[width][height]
-
-    def __is_exists_point(self, width, height, old_color):
-        if 0 <= width < self.width:
-            if 0 <= height < self.height:
-                if self.__get_color(width, height) == old_color:
-                    return True
+    def __is_exists_new_point(self, x, y, old_color, list_new, list_used):
+        if 0 < x <= self.width:
+            if 0 < y <= self.height:
+                if self.__get_color(x, y) == old_color:
+                    if [x, y] not in list_new:
+                        if [x, y] not in list_used:
+                            return True
         return False
 
-    def __set_new_color(self, width, height, new_color):
-        self.picture[width][height] = new_color
 
-    def __add_useful_neighborhood(self, list, old_color):
-        new_points = []
-        if self.__is_exists_point(list[0] - 1, list[1], old_color):
-            new_points.append([list[0] - 1, list[1]])
-        if self.__is_exists_point(list[0] + 1, list[1], old_color):
-            new_points.append([list[0] + 1, list[1]])
-        if self.__is_exists_point(list[0], list[1] - 1, old_color):
-            new_points.append([list[0], list[1] - 1])
-        if self.__is_exists_point(list[0], list[1] + 1, old_color):
-            new_points.append([list[0], list[1] + 1])
-        return new_points
-
+    def __get_color(self, x, y):
+        return self.picture[y - 1][x - 1]
 
 def valid_command(inp, cmd):
     if inp.lower() == cmd:
@@ -110,15 +114,15 @@ def valid_command(inp, cmd):
 
 
 choice = ""
+pic = Picture()
 
 while choice != 'exit':
     choice = str(input("Zadej příkaz:"))
     command = choice.split(" ")
-    pic = Picture()
 
     try:
         if valid_command(command[0].lower(), 'create'):
-            pic.create(int(command[1]), int(command[2]), str(command[3]))
+            pic.create(int(command[1]), int(command[2]))
         elif valid_command(command[0].lower(), 'point'):
             pic.point(int(command[1]), int(command[2]), str(command[3]))
         elif valid_command(command[0].lower(), 'line'):
@@ -137,6 +141,8 @@ while choice != 'exit':
             print("CHYBNY PRIKAZ")
     except IndexError:
         print("CHYBNE PARAMETRY")
+    except ValueError:
+        print("CHYBNA HODNOTA PARAMETRU")
     except:
         print("CHYBA")
         raise
