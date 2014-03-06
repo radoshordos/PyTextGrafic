@@ -8,9 +8,7 @@ UKAZKY KODU
 -----------
 
 Zadej příkaz:CREATE 6 4
-
 Zadej příkaz:LINE 1 1 6 4 L
-
 Zadej příkaz:SHOW
 
 `LOOOOO`
